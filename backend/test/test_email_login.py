@@ -2,11 +2,8 @@ import pytest
 from unittest.mock import MagicMock
 from unittest import TestCase
 
+from src.util.dao import DAO
 from src.controllers.usercontroller import UserController
-
-class MockedDao:
-    def find():
-        return
 
 class TestEmailLogin(TestCase):
     @pytest.mark.unit
@@ -15,9 +12,8 @@ class TestEmailLogin(TestCase):
         Tests that no ValueError is raised when valid email is used.
         """
         testUser = {'firstName': 'Test', 'lastName': 'Test', 'email': 'test.test@test.com'}
-        mockedDao = MockedDao
-        mockedDao.find = MagicMock(return_value=[testUser])
-        userController = UserController(mockedDao)
+        DAO.find = MagicMock(return_value=[testUser])
+        userController = UserController(DAO)
         try:
             userController.get_user_by_email(testUser['email'])
         except ValueError:
@@ -29,9 +25,8 @@ class TestEmailLogin(TestCase):
         Tests that an ValueError is raised when not valid email is used.
         """
         testUser = {'firstName': 'Test', 'lastName': 'Test', 'email': 'test.test.test'}
-        mockedDao = MockedDao
-        mockedDao.find = MagicMock(return_value=[testUser])
-        userController = UserController(mockedDao)
+        DAO.find = MagicMock(return_value=[testUser])
+        userController = UserController(DAO)
         self.assertRaises(ValueError, userController.get_user_by_email, testUser['email'])
 
     @pytest.mark.unit
@@ -40,9 +35,8 @@ class TestEmailLogin(TestCase):
         Tests that the correct user object is returned when registered email is used.
         """
         testUser = {'firstName': 'Test', 'lastName': 'Test', 'email': 'test.test@test.com'}
-        mockedDao = MockedDao
-        mockedDao.find = MagicMock(return_value=[testUser])
-        userController = UserController(mockedDao)
+        DAO.find = MagicMock(return_value=[testUser])
+        userController = UserController(DAO)
         user = userController.get_user_by_email(testUser['email'])
         assert user == testUser
     
@@ -52,9 +46,8 @@ class TestEmailLogin(TestCase):
         Tests that an Exception is raised when not registered email is used.
         """
         testUser = {'firstName': 'Test', 'lastName': 'Test', 'email': 'test.test@test.com'}
-        mockedDao = MockedDao
-        mockedDao.find = MagicMock(side_effect=Exception)
-        userController = UserController(mockedDao)
+        DAO.find = MagicMock(side_effect=Exception)
+        userController = UserController(DAO)
         self.assertRaises(Exception, userController.get_user_by_email, testUser['email'])
     
     @pytest.fixture(autouse=True)
@@ -68,19 +61,9 @@ class TestEmailLogin(TestCase):
         Also tests that an Error is printed out.
         """
         testUser = {'firstName': 'Test', 'lastName': 'Test', 'email': 'test.test@test.com'}
-        mockedDao = MockedDao
-        mockedDao.find = MagicMock(return_value=[testUser, testUser])
-        userController = UserController(mockedDao)
+        DAO.find = MagicMock(return_value=[testUser, testUser])
+        userController = UserController(DAO)
         user = userController.get_user_by_email(testUser['email'])
         capturedPrint = self.capsys.readouterr()
         assert capturedPrint.out == 'Error: more than one user found with mail test.test@test.com\n'
         assert user == testUser
-        
-        
-
-        
-
-
-
-    
-
