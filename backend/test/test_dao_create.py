@@ -1,7 +1,7 @@
 import pytest
-import json
+
 from jsonschema import validate
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from unittest import TestCase
 
 from src.util.validators import getValidator
